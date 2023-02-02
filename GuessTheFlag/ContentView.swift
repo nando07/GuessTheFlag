@@ -14,6 +14,7 @@ struct ContentView: View {
     @State private var score = 0
     @State private var questionNumber = 0
     @State private var reset = false
+    @State private var isRotating = 0.0
     
    @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"].shuffled()
      
@@ -48,6 +49,12 @@ struct ContentView: View {
                             flagTapped(number)
                         } label: {
                             FlagImage(country: countries[number])
+                        }
+                        .onTapGesture {
+                            withAnimation(.linear(duration: 1)
+                                .speed(0.1).repeatForever(autoreverses: false)) {
+                                    isRotating = 360.0
+                                }
                         }
                     }
                 }
