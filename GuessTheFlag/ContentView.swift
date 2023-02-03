@@ -15,6 +15,10 @@ struct ContentView: View {
     @State private var questionNumber = 0
     @State private var reset = false
     @State private var isRotating = 0.0
+    @State private var animationAmount = 0.0
+    @State private var selectedButton : Int?
+    let buttons = ["Button 1", "Button 2", "Button 3"]
+        @State private var rotate = Array(repeating: false, count: 3)
     
    @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"].shuffled()
      
@@ -46,16 +50,25 @@ struct ContentView: View {
                     
                     ForEach(0..<3) { number in
                         Button {
-                            flagTapped(number)
-                        } label: {
+                            selectedButton = number
+//                            flagTapped(number)
+                            withAnimation(.interpolatingSpring(stiffness: 8, damping: 3)) {
+                                self.rotate[number].toggle()
+                                  
+                                flagTapped(number)
+                                
+                            }
+                        }
+                        
+                    
+                    label:
+                        {
                             FlagImage(country: countries[number])
                         }
-                        .onTapGesture {
-                            withAnimation(.linear(duration: 1)
-                                .speed(0.1).repeatForever(autoreverses: false)) {
-                                    isRotating = 360.0
-                                }
-                        }
+                        
+            
+                        .rotation3DEffect(.degrees(self.rotate[number] ? 180 : 0), axis: (x: 0, y: 1, z: 0))
+                        .opacity(number == self.selectedButton ? 1 : 0.30)
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -80,10 +93,11 @@ struct ContentView: View {
         }
             .alert(scoreTitle, isPresented: $showingScore) {
                 Button("Continue", action: askQuestion)
+                
             } message: {
                 Text("Your score is " + "\(score)")
             }
-        
+
             .alert("You reached the end!", isPresented: $reset) {
                 Button("Reset", action: resetGame)
               }
